@@ -10,7 +10,8 @@ MediaKeyboard by onetransistor: https://www.onetransistor.eu/2020/03/usb-multime
 
 Arduino-IRremote by Ken Shiriff et al (available in arduino library manager): https://github.com/Arduino-IRremote/Arduino-IRremote
 
-STM32 cores for Arduino: https://github.com/stm32duino/Arduino_Core_STM32
+STM32 cores for Arduino: https://github.com/stm32duino/Arduino_Core_STM32  
+
 
 
 
