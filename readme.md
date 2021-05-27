@@ -14,5 +14,6 @@ STM32 cores for Arduino: https://github.com/stm32duino/Arduino_Core_STM32
 
 
 
-
+### Resource Use
 Uses around 20k bytes flash, 3k bytes for global variables. So should also work with F401, F103, etc, maybe even F0.
+My F411 board pulls about 24mA constant running this sketch, this could probably be reduced a lot, perhaps even to single digit mA. With the serial adapter connected it goes up to ~34mA constant, add another 5mA if the feedback LED is enabled.
