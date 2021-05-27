@@ -132,11 +132,12 @@ void loop() {
                 delay(500);
                 break;
 
+              //todo: check the last push time against a defined rate limit for these media keys, rather than delay
               //PlayPause
               case 0x43:
                 MediaKeyboard.press(MEDIA_PLAY_PAUSE);
                 MediaKeyboard.release();
-                delay(500);
+                delay(1000);
                 break;
 
               //Next
@@ -146,7 +147,7 @@ void loop() {
                 delay(500);
                 break;
 
-              //
+              //Prev
               case 0x44:
                 MediaKeyboard.press(MEDIA_PREV);
                 MediaKeyboard.release();
