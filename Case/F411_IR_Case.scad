@@ -25,7 +25,7 @@ triangle_mount_dist_from_top = 2.4;
 
 
 f411_ir_case_body();
-translate([0, -60, 0]) f411_ir_case_lid();
+//translate([0, -60, 0]) f411_ir_case_lid();
 
 module f411_ir_case_body()
 {
