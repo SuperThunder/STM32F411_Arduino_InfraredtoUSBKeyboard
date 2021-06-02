@@ -1,35 +1,34 @@
-//include our parameters file
-//"include <filename> acts as if the contents of the included file were written in the including file"
-//allowing us to use the variables as if they were defined here
 include <F411_IR_Case_params.scad>
 
-//The case
-//translate([0,-120,full_height/2]) blackpill_f411_protocase();
+ir_case_width = 34;
+ir_case_length = 84;
+ir_case_height = 34;
 
-//The legs. Rotate 90 degrees in the slicer before printing.
-//translate([45, 0, full_height/2]) blackpill_f411_protocase_leg();
+ir_mount_dist_from_top = 10;
+ir_sensor_cutout_height = ir_board_bottom_clearance+ir_board_top_clearance + 2;
+
+ir_case_full_width = ir_case_width + wall_thickness*2;
+ir_case_full_length = ir_case_length + wall_thickness*2;
+ir_case_full_height = ir_case_height + base_thickness;
+
+ir_lid_removal_cutout_width = 10;
+ir_lid_removal_cutout_height = 3;
+
+leg_mount_height = 4 + 0.2;
+leg_mount_width = 5;
+leg_mount_length = 4 + 0.4;
+
+triangle_mount_base = 2;
+triangle_mount_length = 12;
+triangle_mount_dist_from_top = 2.4;
+
+
 
 f411_ir_case_body();
+translate([0, -60, 0]) f411_ir_case_lid();
 
 module f411_ir_case_body()
 {
-    ir_case_width = 34;
-    ir_case_length = 84;
-    ir_case_height = 34;
-    
-    ir_mount_dist_from_top = 10;
-    ir_sensor_cutout_height = ir_board_bottom_clearance+ir_board_top_clearance + 2;
-    
-    ir_case_full_width = ir_case_width + wall_thickness*2;
-    ir_case_full_length = ir_case_length + wall_thickness*2;
-    ir_case_full_height = ir_case_height + base_thickness;
-    
-    leg_mount_height = 4 + 0.2;
-    leg_mount_width = 5;
-    leg_mount_length = 4 + 0.4;
-    
-    triangle_mount_base = 2;
-    triangle_mount_dist_from_top = 2.4;
     
     translate([0,0,ir_case_full_height/2]) union()
     {
@@ -50,20 +49,26 @@ module f411_ir_case_body()
             //IR sensor cutout
             translate([-ir_case_full_length/2,0,-ir_case_height/2 + base_thickness + ir_sensor_cutout_height/2]) cube([wall_thickness*2, ir_board_width+1, ir_sensor_cutout_height], center=true);
             
-            //lid removal cutout
-            translate([-ir_case_full_length/2,0,ir_case_full_height/2 - 2]) cube([wall_thickness*2, ir_board_width+1, 4], center=true);
+            //lid removal cutouts
+            //left
+            translate([0,ir_case_full_width/2,ir_case_full_height/2 - ir_lid_removal_cutout_height/2]) cube([ir_lid_removal_cutout_width, wall_thickness*2, ir_lid_removal_cutout_height], center=true);
+            //right
+            translate([0,-ir_case_full_width/2,ir_case_full_height/2 - ir_lid_removal_cutout_height/2]) cube([ir_lid_removal_cutout_width, wall_thickness*2, ir_lid_removal_cutout_height], center=true);
+            //bottom
+            translate([-ir_case_full_length/2,0,ir_case_full_height/2 - ir_lid_removal_cutout_height/2]) cube([wall_thickness*2, ir_lid_removal_cutout_width, ir_lid_removal_cutout_height], center=true);
+            
             
             //top right triangle cutout
-            translate([ir_case_length/4,-ir_case_full_width/2+triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) triangle_mount(triangle_mount_base, wall_thickness/2, 12);
+            translate([ir_case_length/4,-ir_case_full_width/2+triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
             
             //bottom right triangle cutout
-            translate([-ir_case_length/4,-ir_case_full_width/2+triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) triangle_mount(triangle_mount_base, wall_thickness/2, 12);
+            translate([-ir_case_length/4,-ir_case_full_width/2+triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
             
             //top left triangle cutout
-            translate([ir_case_length/4,ir_case_full_width/2-triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) mirror([0,1,0]) triangle_mount(triangle_mount_base, wall_thickness/2, 12);
+            translate([ir_case_length/4,ir_case_full_width/2-triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) mirror([0,1,0]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
             
             //bottom left triangle cutout
-            translate([-ir_case_length/4,ir_case_full_width/2-triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) mirror([0,1,0]) triangle_mount(triangle_mount_base, wall_thickness/2, 12);
+            translate([-ir_case_length/4,ir_case_full_width/2-triangle_mount_base,ir_case_full_height/2 - triangle_mount_base - triangle_mount_dist_from_top]) mirror([0,1,0]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
         
         }
         
@@ -80,6 +85,34 @@ module f411_ir_case_body()
    
 }
 
+module f411_ir_case_lid()
+{
+    lid_thickness = 1.6;
+    translate([0,0,lid_thickness/2]) union()
+    {
+        //base
+        cube([ir_case_full_length, ir_case_full_width, lid_thickness], center=true);
+        
+        //TODO: should probably put some circular or triangular support on the inner corner of the support, since stress is concentrated there
+        //top right triangle mount (with support to get to right height)
+        translate([ir_case_length/4,-ir_case_full_width/2+triangle_mount_base*2, triangle_mount_dist_from_top/2+lid_thickness/2+triangle_mount_base/2]) cube([triangle_mount_length, triangle_mount_base*2, triangle_mount_dist_from_top+triangle_mount_base], center=true);
+        translate([ir_case_length/4,-ir_case_full_width/2+triangle_mount_base, triangle_mount_dist_from_top+lid_thickness/2]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
+            
+        //bottom right triangle mount
+        translate([-ir_case_length/4,-ir_case_full_width/2+triangle_mount_base*2, triangle_mount_dist_from_top/2+lid_thickness/2+triangle_mount_base/2]) cube([triangle_mount_length, triangle_mount_base*2, triangle_mount_dist_from_top+triangle_mount_base], center=true);
+        translate([-ir_case_length/4,-ir_case_full_width/2+triangle_mount_base,triangle_mount_dist_from_top+lid_thickness/2]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
+            
+        //top left triangle mount
+        translate([ir_case_length/4,ir_case_full_width/2-triangle_mount_base*2, triangle_mount_dist_from_top/2+lid_thickness/2+triangle_mount_base/2]) cube([triangle_mount_length, triangle_mount_base*2, triangle_mount_dist_from_top+triangle_mount_base], center=true);
+        translate([ir_case_length/4,ir_case_full_width/2-triangle_mount_base,triangle_mount_dist_from_top+lid_thickness/2]) mirror([0,1,0]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
+            
+        //bottom left triangle mount
+        translate([-ir_case_length/4,ir_case_full_width/2-triangle_mount_base*2, triangle_mount_dist_from_top/2+lid_thickness/2+triangle_mount_base/2]) cube([triangle_mount_length, triangle_mount_base*2, triangle_mount_dist_from_top+triangle_mount_base], center=true);
+        translate([-ir_case_length/4,ir_case_full_width/2-triangle_mount_base,triangle_mount_dist_from_top+lid_thickness/2]) mirror([0,1,0]) triangle_mount(triangle_mount_base, wall_thickness/2, triangle_mount_length);
+    }
+ 
+}
+
 
 module leg_mount_points(mount_width, mount_length, mount_height)
 {
@@ -94,11 +127,6 @@ module leg_mount_points(mount_width, mount_length, mount_height)
     }
 }
 
-//module triangle(base,height,length)
-//{
-//    cyl_d = base/sin(120);
-//    scale([1,1,1]) cylinder(r=cyl_d/2, h=length, center=true, $fn=3);
-//}
 
 //from https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Primitive_Solids#polyhedron
 //makes 3D triangles
